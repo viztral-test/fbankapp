@@ -1,0 +1,72 @@
+<section class="card" [attr.aria-busy]="loading()">
+  <div class="heading">
+    <h1>Transactions</h1>
+    <button type="button" class="btn btn-secondary" (click)="refresh()" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : 'Refresh' }}
+    </button>
+  </div>
+
+  @if (error(); as message) {
+    <p class="alert alert-error" role="alert">
+      {{ message }}
+      <button type="button" class="btn-link" (click)="refresh()" [disabled]="loading()">Try again</button>
+    </p>
+  }
+
+  @if (data(); as d) {
+    @if (d.items.length === 0) {
+      <p class="muted empty">
+        @if (d.totalItems === 0) {
+          No transactions yet. <a routerLink="/add-money">Add money</a> to get started.
+        } @else {
+          Nothing on this page.
+          <button type="button" class="btn-link" (click)="load(0)">Back to the newest</button>
+        }
+      </p>
+    } @else {
+      <ul class="transactions" [class.stale]="loading()">
+        @for (tx of d.items; track tx.reference) {
+          <li>
+            <div class="tx-main">
+              <span class="tx-description">{{ tx.description }}</span>
+              <span class="tx-amount">+{{ tx.amount | currency: currency() }}</span>
+            </div>
+            <div class="tx-meta">
+              <span>
+                <span class="badge">{{ typeLabel(tx.type) }}</span>
+                {{ tx.createdAt | date: 'medium' }}
+              </span>
+              <span>Balance after {{ tx.balanceAfter | currency: currency() }}</span>
+            </div>
+            <div class="tx-reference">Ref {{ tx.reference }}</div>
+          </li>
+        }
+      </ul>
+
+      <nav class="pager" aria-label="Transaction pages">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="load(d.page - 1)"
+          [disabled]="loading() || d.page === 0"
+        >
+          Newer
+        </button>
+        <span class="muted">
+          Page {{ d.page + 1 }} of {{ d.totalPages }} · {{ d.totalItems }}
+          {{ d.totalItems === 1 ? 'transaction' : 'transactions' }}
+        </span>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="load(d.page + 1)"
+          [disabled]="loading() || d.page + 1 >= d.totalPages"
+        >
+          Older
+        </button>
+      </nav>
+    }
+  } @else if (loading()) {
+    <p class="muted empty">Loading transactions…</p>
+  }
+</section>

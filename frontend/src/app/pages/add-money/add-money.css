@@ -1,0 +1,29 @@
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.muted {
+  margin: 0 0 1.25rem;
+}
+
+form {
+  max-width: 24rem;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.reference {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.alert a {
+  display: inline-block;
+  margin-top: 0.25rem;
+}

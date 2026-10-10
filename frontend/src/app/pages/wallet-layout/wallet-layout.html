@@ -1,0 +1,37 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">fbankapp</span>
+    <nav aria-label="Wallet">
+      <a routerLink="/transactions" routerLinkActive="active">Transactions</a>
+      <a routerLink="/add-money" routerLinkActive="active">Add money</a>
+    </nav>
+    <div class="user">
+      <span class="user-name">{{ session()?.displayName }}</span>
+      <button type="button" class="btn btn-secondary" (click)="logout()" [disabled]="loggingOut()">
+        {{ loggingOut() ? 'Logging out…' : 'Log out' }}
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <section class="card balance-card" aria-live="polite">
+    <p class="balance-label">Current balance</p>
+    @if (wallet(); as w) {
+      <p class="balance-amount">
+        {{ w.balance | currency: w.currency }} <span class="balance-currency">{{ w.currency }}</span>
+      </p>
+      <p class="muted balance-updated">Updated {{ w.updatedAt | date: 'medium' }}</p>
+    } @else if (balanceLoading()) {
+      <p class="balance-amount muted">Loading…</p>
+    }
+    @if (balanceError(); as message) {
+      <p class="alert alert-error" role="alert">
+        {{ message }}
+        <button type="button" class="btn-link" (click)="loadBalance()" [disabled]="balanceLoading()">Try again</button>
+      </p>
+    }
+  </section>
+
+  <router-outlet />
+</main>

@@ -1,0 +1,84 @@
+<section class="card">
+  <h1>Add money</h1>
+  <p class="muted">
+    Top-ups are simulated. No card or bank details are needed and no real payment is made.
+  </p>
+
+  @if (result(); as r) {
+    <div class="alert alert-success" role="status">
+      <strong>{{ r.transaction.amount | currency: r.wallet.currency }} added.</strong>
+      Your new balance is {{ r.wallet.balance | currency: r.wallet.currency }}.
+      <span class="reference">Reference {{ r.transaction.reference }}</span>
+      <a routerLink="/transactions">View transactions</a>
+    </div>
+  }
+  @if (error(); as message) {
+    <p class="alert alert-error" role="alert">{{ message }}</p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label for="amount">Amount ({{ currency() }})</label>
+      <input
+        id="amount"
+        type="text"
+        inputmode="decimal"
+        formControlName="amount"
+        autocomplete="off"
+        placeholder="0.00"
+        [attr.aria-invalid]="showError('amount')"
+        aria-describedby="amount-help amount-error"
+      />
+      <p class="field-help" id="amount-help">
+        From {{ minAmount | currency: currency() }} to {{ maxAmount | currency: currency() }}.
+      </p>
+      @if (showError('amount')) {
+        <p class="field-error" id="amount-error">
+          @if (form.controls.amount.errors; as errors) {
+            @if (errors['required']) {
+              Enter an amount.
+            } @else if (errors['format']) {
+              Enter a number with at most 2 decimal places, for example 25.50.
+            } @else if (errors['min']) {
+              The amount must be at least {{ minAmount | currency: currency() }}.
+            } @else if (errors['max']) {
+              The amount must be at most {{ maxAmount | currency: currency() }}.
+            } @else if (errors['server']) {
+              {{ errors['server'] }}
+            }
+          }
+        </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="note">Note <span class="optional">(optional)</span></label>
+      <input
+        id="note"
+        type="text"
+        formControlName="note"
+        autocomplete="off"
+        [attr.aria-invalid]="showError('note')"
+        aria-describedby="note-help note-error"
+      />
+      <p class="field-help" id="note-help">
+        Shown as the transaction description. {{ form.controls.note.value.length }}/{{ noteMaxLength }}
+      </p>
+      @if (showError('note')) {
+        <p class="field-error" id="note-error">
+          @if (form.controls.note.errors; as errors) {
+            @if (errors['maxlength']) {
+              The note must be at most {{ noteMaxLength }} characters.
+            } @else if (errors['server']) {
+              {{ errors['server'] }}
+            }
+          }
+        </p>
+      }
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+      {{ submitting() ? 'Adding money…' : 'Add money' }}
+    </button>
+  </form>
+</section>

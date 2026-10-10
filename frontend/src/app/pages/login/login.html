@@ -1,0 +1,56 @@
+<main class="login-page">
+  <section class="card login-card">
+    <p class="brand">fbankapp</p>
+    <h1>Sign in</h1>
+    <p class="muted">Sign in to view your wallet and add money.</p>
+
+    @if (sessionEnded && !error()) {
+      <p class="alert alert-info" role="status">Your session has ended. Please sign in again.</p>
+    }
+    @if (error(); as message) {
+      <p class="alert alert-error" role="alert">{{ message }}</p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          [attr.aria-invalid]="showError('username')"
+          aria-describedby="username-error"
+        />
+        @if (showError('username')) {
+          <p class="field-error" id="username-error">Enter your username.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="showError('password')"
+          aria-describedby="password-error"
+        />
+        @if (showError('password')) {
+          <p class="field-error" id="password-error">Enter your password.</p>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" [disabled]="submitting()">
+        {{ submitting() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+
+    <p class="demo-hint">
+      Local demo account: <code>demo</code> / <code>Demo&#64;1234</code>
+    </p>
+  </section>
+</main>
